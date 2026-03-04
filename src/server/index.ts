@@ -119,9 +119,18 @@ async function main() {
     hook: 'onRequest',
   });
 
-  await server.register(fastifyCors);
+  await server.register(fastifyCors, {
+    credentials: true,
+    origin: true,
+  });
 
   await server.register(fastifySensible);
+
+  server.addHook('onSend', async (_req, res) => {
+    res.header('X-Content-Type-Options', 'nosniff');
+    res.header('X-Frame-Options', 'SAMEORIGIN');
+    res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  });
 
   await server.register(fastifyMultipart, {
     limits: {

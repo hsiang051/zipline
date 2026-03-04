@@ -10,10 +10,19 @@ export async function readToDataURL(file: File): Promise<string> {
 export async function fetchToDataURL(url?: string) {
   if (!url) return null;
 
-  const res = await fetch(url);
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return null;
+  } catch {
+    return null;
+  }
+
+  const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
   if (!res.ok) return null;
 
   const arr = await res.arrayBuffer();
+  if (arr.byteLength > 10 * 1024 * 1024) return null;
+
   const base64 = Buffer.from(arr).toString('base64');
 
   return `data:${res.headers.get('content-type')};base64,${base64}`;
