@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import 'katex/dist/katex.min.css';
 import { Alert, Paper } from '@mantine/core';
+import * as sanitize from 'isomorphic-dompurify';
 
 export default function KaTeX({ tex }: { tex: string }) {
   const [html, setHtml] = useState('');
@@ -11,7 +12,7 @@ export default function KaTeX({ tex }: { tex: string }) {
     import('katex').then(({ default: { renderToString } }) => {
       try {
         const html = renderToString(tex, { throwOnError: true });
-        setHtml(html);
+        setHtml(sanitize.sanitize(html));
       } catch (err) {
         setError(err);
       }
