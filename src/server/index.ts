@@ -120,7 +120,6 @@ async function main() {
   });
 
   await server.register(fastifyCors, {
-    credentials: true,
     origin: true,
   });
 
